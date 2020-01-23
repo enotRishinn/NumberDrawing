@@ -3,20 +3,30 @@
  */
 
 function NumberDrawing(width, height) {
-  this.width = width;
-  this.height = height;
+  this.width = parseInt(width);
+  this.height = parseInt(height);
+  this.colorType = 'rgba';
   this.data = null;
 
   NumberDrawing.prototype = {
-    png_decoder: require('./modules/png-decoder.js'),
-    png_encoder: require('./modules/png-encoder.js'),
-    read_png: function(callback) {
+    constructor: NumberDrawing,
+    pngDecoder: require('./modules/png-decoder.js'),
+    pngEncoder: require('./modules/png-encoder.js'),
+    createPNG: function(callback) {
       let imageBuffer = new Buffer(this.width * this.height * 4);
       imageBuffer.fill(0);
       this.data = imageBuffer;
       callback.call(this);
     },
-    set_pixel: function(x, y, r, g, b, a) {
+    getPixel: function(x, y) {
+      let offset = (x + y * this.width) * 4;
+      return [
+        this.data[offset],
+        this.data[offset + 1],
+        this.dsts[offset + 2],
+        this.data[offset + 3]
+    ]},
+    setPixel: function(x, y, r, g, b, a) {
       let offset = (x + y * this.width) * 4;
       if (arguments.length != 5) a = 255;
       this.data[offset] = r;
@@ -24,11 +34,12 @@ function NumberDrawing(width, height) {
   		this.data[offset + 2] = b;
   		this.data[offset + 3] = a;
     },
-    write_png:function(fileName, callback) {
+    writePNG: function(image, callback) {
+      this.png_encoder.encode(this, function(data){
 
+      });
     }
   }
-
 }
 
 module.exports = NumberDrawing;
