@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/enotRishinn/NumberDrawing/issues"
   },
-  "homepage": "https://github.com/enotRishinn/NumberDrawing#readme"
+  "homepage": "https://github.com/enotRishinn/NumberDrawing#readme",
+  "dependencies": {
+    "fs": "0.0.1-security"
+  }
 }
