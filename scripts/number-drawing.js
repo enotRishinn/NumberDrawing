@@ -26,15 +26,37 @@ NumberDrawing.prototype = {
   pngDecoder: require('../modules/png-decoder.js'),
   pngEncoder: require('../modules/png-encoder.js'),
 
+  /**
+  	 * createPNG(function callback)
+  	 *
+  	 * Create a buffer equal to the image size and adding a buffer to the data this.data
+  	 */
+
   createPNG: function(callback) {
     let imageBuffer = Buffer.alloc(this.width * this.height * 4);
     imageBuffer.fill(0);
     this.data = imageBuffer;
     callback.call(this);
   },
+
+  /**
+  	 * selectFont(font)
+  	 *
+  	 * Change the font for printing a number
+  	 * @param font - type of font (for example, Font.FONT_WHITE_48)
+  	 */
+
   selectFont: function(font) {
     this.font = font;
   },
+
+  /**
+  	 * printNumber(number)
+  	 *
+  	 * Drawing the number in the picture and image creation
+  	 * @param number - number that is printed
+  	 */
+
   printNumber: function(number) {
     let font_image = this.font.font.pages.page._file;
     let padding = parseInt(this.font.font.info._padding[0]) - 1;
@@ -76,6 +98,15 @@ NumberDrawing.prototype = {
     });
 
   },
+
+  /**
+  	 * getPixel(x, y)
+  	 *
+  	 * Getting the value of the RGBA of the pixel.
+  	 * @param x - OX coordinate
+     * @param y - OY coordinate
+  	 */
+
   getPixel: function(x, y) {
     let offset = (x + y * this.width) * 4;
     return [
@@ -84,6 +115,19 @@ NumberDrawing.prototype = {
       this.data[offset + 2],
       this.data[offset + 3]
   ]},
+
+  /**
+  	 * setPixel(x, y, r, g, b, a)
+  	 *
+  	 * Setting the value of the RGBA in the pixel
+  	 * @param x - OX coordinate
+     * @param y - OY coordinate
+     * @param r - Red value in RGBA
+     * @param g - Green value in RGBA
+     * @param b - Blue value in RGBA
+     * @param a - Alpha(oppacity) value in RGBA
+  	 */
+
   setPixel: function(x, y, r, g, b, a) {
     let offset = (x + y * this.width) * 4;
     this.data[offset] = r;
@@ -91,6 +135,13 @@ NumberDrawing.prototype = {
   	this.data[offset + 2] = b;
   	this.data[offset + 3] = a;
   },
+
+  /**
+  	 * readPNG(function callback)
+  	 *
+  	 * Reading a file with fs library for later decoding
+  	 */
+
   readPNG: function(callback) {
 		let that = this;
 
@@ -106,6 +157,13 @@ NumberDrawing.prototype = {
 				});
 			});
 	},
+
+  /**
+  	 * decodePNG(function callback)
+  	 *
+  	 * PNG file decoding
+  	 */
+
   decodePNG: function(callback) {
 		let that = this;
 		let png = new this.pngDecoder(this.data);
@@ -116,6 +174,15 @@ NumberDrawing.prototype = {
       callback.call(that);
 		});
 	},
+
+  /**
+  	 * writePixel(image, number)
+  	 *
+  	 * Encoding a file and creating a PNG image
+  	 * @param image - image for encoding
+     * @param number - number that was printed
+  	 */
+
   writePNG: function(image, number) {
 		let that = this;
 		this.pngEncoder.encode(this, function (data) {
