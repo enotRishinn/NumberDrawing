@@ -2,20 +2,30 @@
  * number-drawing.js - module for drawing real and integer numbers on PNG picture
  */
 
-const fs = require('fs');
 const Font = require('../constants.js');
+const fs = require('fs');
 
-function NumberDrawing(width, height) {
-  this.width = parseInt(width);
-  this.height = parseInt(height);
+function NumberDrawing(first_arg, second_arg) {
   this.data = null;
+  this.image = null;
+  this.width = parseInt(first_arg);
+  this.height = parseInt(second_arg);
   this.font = Font.FONT_BLACK_48;
+  let that = this;
+
+  if (typeof first_arg === 'number') {
+    this.width = parseInt(first_arg);
+    this.height = parseInt(second_arg);
+  } else {
+    this.image = first_arg;
+  }
 }
 
 NumberDrawing.prototype = {
   constructor: NumberDrawing,
   pngDecoder: require('../modules/png-decoder.js'),
   pngEncoder: require('../modules/png-encoder.js'),
+
   createPNG: function(callback) {
     let imageBuffer = Buffer.alloc(this.width * this.height * 4);
     imageBuffer.fill(0);
@@ -24,6 +34,48 @@ NumberDrawing.prototype = {
   },
   selectFont: function(font) {
     this.font = font;
+  },
+  printNumber: function(number) {
+    let font_image = this.font.font.pages.page._file;
+    let padding = parseInt(this.font.font.info._padding[0]) - 1;
+    let that = this;
+    let left_margin = 0;
+    let count = 0;
+
+    let numberDrawing = new NumberDrawing(font_image);
+      numberDrawing.readPNG(function() {
+        for (let i = 0; i < number.length; i++ ){
+          let char = null;
+          that.font.font.chars.char.forEach(function(el) {
+            if (el._id == number[i].charCodeAt(0)){
+              char = el;
+              if (el._id == 44 || el._id == 46) count += 1;
+              if ((el._id == 44 || el._id == 46) && (i == 0 || i == (number.length - 1))) count += 2;
+            }
+          });
+          if (char === null) throw new Error('Invalid characters in number');
+          if (count > 1) throw new Error('This is not a number');
+
+          let x_first = parseInt(char._x) - padding;
+          let y_first = parseInt(char._y) - padding;
+          let x_last = parseInt(char._x) + parseInt(char._width) + padding;
+          let y_last = parseInt(char._y) + parseInt(char._height)
+              + parseInt(char._xoffset) + padding;
+          for (let n = x_first; n <= x_last; n++) {
+            for (let k = y_first; k <= y_last; k++) {
+              let pixel = this.getPixel(n, k);
+              that.setPixel(left_margin + n - x_first, k, pixel[0], pixel[1],
+                 pixel[2], pixel[3]);
+            }
+          }
+          left_margin = left_margin + parseInt(char._width) + padding;
+        }
+
+      that.writePNG('./images/number' + number + '.png');
+      console.log('Created image in project folder ./NumberDrawing/images/'
+              + 'number' + number + '.png');
+    });
+
   },
   getPixel: function(x, y) {
     let offset = (x + y * this.width) * 4;
@@ -35,27 +87,46 @@ NumberDrawing.prototype = {
   ]},
   setPixel: function(x, y, r, g, b, a) {
     let offset = (x + y * this.width) * 4;
-    if (arguments.length != 5) a = 255;
     this.data[offset] = r;
   	this.data[offset + 1] = g;
   	this.data[offset + 2] = b;
   	this.data[offset + 3] = a;
   },
-  writePNG: function(image, callback) {
+  readPNG: function(callback) {
 		let that = this;
 
+    fs.stat(that.image, function(err, stats) {
+				if (err) throw err;
+				fs.readFile(that.image, function(err, data) {
+					if (err) throw err;
+					that.data = data;
+          that.decodePNG(function() {
+
+            callback.call(that);
+          })
+				});
+			});
+	},
+  decodePNG: function(callback) {
+		let that = this;
+		let png = new this.pngDecoder(this.data);
+		png.decode(function (pixels) {
+			that.width = png.width;
+			that.height = png.height;
+			that.data = pixels;
+      callback.call(that);
+		});
+	},
+  writePNG: function(image) {
+		let that = this;
 		this.pngEncoder.encode(this, function (data) {
 			let file_data = fs.openSync(image, 'w');
       data.forEach(function(item, i, data){
         fs.writeSync(file_data, item, 0, item.length);
       });
 			fs.closeSync(file_data);
-
-			if(callback) {
-				callback.call(that);
-			}
 		});
-	},
+	}
 }
 
 module.exports = NumberDrawing;

@@ -25,7 +25,7 @@ const FONT_WHITE_48 = {
 		pages: {
 			page: {
 				_id: '0',
-				_file: 'font-white-48.png'
+				_file: './fonts/font-white-48/font-white-48.png'
 			}
 		},
 		chars: {

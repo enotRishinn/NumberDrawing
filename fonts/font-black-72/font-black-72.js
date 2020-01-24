@@ -25,7 +25,7 @@ const FONT_BLACK_72 =  {
 		pages: {
 			page: {
 				_id: '0',
-				_file: 'font-black-72.png'
+				_file: './fonts/font-black-72/font-black-72.png'
 			}
 		},
 		chars: {
