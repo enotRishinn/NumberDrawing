@@ -175,6 +175,18 @@ const FONT_BLACK_72 =  {
 					_chnl: '15'
 				},
 				{
+					_id: '45',
+					_x: '448',
+					_y: '37',
+					_width: '20',
+					_height: '7',
+					_xoffset: '2',
+					_yoffset: '30',
+					_xadvance: '24',
+					_page: '0',
+					_chnl: '15'
+				},
+				{
 					_id: '32',
 					_x: '0',
 					_y: '0',

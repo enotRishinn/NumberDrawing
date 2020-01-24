@@ -175,6 +175,18 @@ const FONT_WHITE_48 = {
 					_chnl: '15'
 				},
 				{
+					_id: '45',
+					_x: '335',
+					_y: '27',
+					_width: '13',
+					_height: '5',
+					_xoffset: '2',
+					_yoffset: '20',
+					_xadvance: '26',
+					_page: '0',
+					_chnl: '15'
+				},
+				{
 					_id: '32',
 					_x: '0',
 					_y: '0',

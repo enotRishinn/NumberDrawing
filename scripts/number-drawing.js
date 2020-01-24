@@ -51,6 +51,7 @@ NumberDrawing.prototype = {
               char = el;
               if (el._id == 44 || el._id == 46) count += 1;
               if ((el._id == 44 || el._id == 46) && (i == 0 || i == (number.length - 1))) count += 2;
+              if(el._id == 45 && i != 0) count +=2;
             }
           });
           if (char === null) throw new Error('Invalid characters in number');
@@ -71,9 +72,7 @@ NumberDrawing.prototype = {
           left_margin = left_margin + parseInt(char._width) + padding;
         }
 
-      that.writePNG('./images/number' + number + '.png');
-      console.log('Created image in project folder ./NumberDrawing/images/'
-              + 'number' + number + '.png');
+      that.writePNG('./images/number' + number + '.png', number);
     });
 
   },
@@ -117,7 +116,7 @@ NumberDrawing.prototype = {
       callback.call(that);
 		});
 	},
-  writePNG: function(image) {
+  writePNG: function(image, number) {
 		let that = this;
 		this.pngEncoder.encode(this, function (data) {
 			let file_data = fs.openSync(image, 'w');
@@ -125,7 +124,16 @@ NumberDrawing.prototype = {
         fs.writeSync(file_data, item, 0, item.length);
       });
 			fs.closeSync(file_data);
+      fs.stat('./images/number' + number + '.png', function(err, stats) {
+        if (err) {
+          console.log('Image creation error');
+        } else {
+          console.log('Created image in project folder ./NumberDrawing/images/'
+                + 'number' + number + '.png');
+        }
+      });
 		});
+
 	}
 }
 
